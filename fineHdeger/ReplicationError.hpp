@@ -11,8 +11,8 @@ using namespace QuantLib;
 class ReplicationError
 {
 public:
-    ReplicationError(Option::Type type, Time maturity, Real strike, Real s0,Rate sigma, Rate r, Rate q) :
-    maturity_(maturity), payoff_(type, strike), s0_(s0), sigma_(sigma), r_(r), q_(q)
+    ReplicationError(Option::Type type, Time maturity, Real strike, Real s0,Rate sigma, Rate r, Rate q, Real transactionCost) :
+    maturity_(maturity), payoff_(type, strike), s0_(s0), sigma_(sigma), r_(r), q_(q), transactionCost_(transactionCost)
     {
         // for option BSM Price
         DiscountFactor rDiscount = std::exp(-r_*maturity_);
@@ -54,13 +54,14 @@ private:
     Rate r_;
     Rate q_;
     Real vega_;
+    Real transactionCost_;
 };
 
 class ReplicationPathPricer : public PathPricer<Path>
 {
 public:
-    ReplicationPathPricer(Option::Type type, Real strike, Real r, Real q, Time maturity, Volatility sigma):
-    type_(type), strike_(strike), r_(r), q_(q), maturity_(maturity), sigma_(sigma)
+    ReplicationPathPricer(Option::Type type, Real strike, Real r, Real q, Time maturity, Volatility sigma, Real transactionCost):
+    type_(type), strike_(strike), r_(r), q_(q), maturity_(maturity), sigma_(sigma), transactionCost_(transactionCost)
     {
         QL_REQUIRE(strike_ > 0.0, "strike must be positive");
         QL_REQUIRE(maturity_ > 0.0, "maturity must be positive");
@@ -75,6 +76,7 @@ private:
     Rate q_;
     Time maturity_;
     Volatility sigma_;
+    Real transactionCost_;
 };
 
 

@@ -5,6 +5,8 @@
 #   include <ql/auto_link.hpp>
 #endif
 
+#include "ReplicationError.hpp"
+
 #include <iostream>
 #include <iomanip>
 
@@ -30,7 +32,7 @@ int main(int argc, const char * argv[])
         Volatility volatility = 0.20;
         Rate riskFreeRate = 0.01;
         Rate dividendRate = 0.01;
-        ReplicationError rp(Option::Call, maturity, strike, underlying, volatility, resikFreeRate, dividendRate);
+        ReplicationError rp(Option::Call, maturity, strike, underlying, volatility, riskFreeRate, dividendRate, 0);
         Size scenarios = 20000;
         Size hedgesNum;
         
@@ -41,6 +43,8 @@ int main(int argc, const char * argv[])
         hedgesNum = 84;
         std::cout << " Hedge : " << hedgesNum << "hedging number " <<std::endl;
         rp.compute(hedgesNum, scenarios);
+        
+        hedgesNum = 84;
         
         return 0;
     }

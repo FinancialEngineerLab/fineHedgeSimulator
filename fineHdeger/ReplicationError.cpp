@@ -30,7 +30,7 @@ void ReplicationError::compute(Size nTimeSteps, Size nSamples)
     ext::shared_ptr<generator_type> myPathGenerator(new generator_type(diffusion, maturity_, nTimeSteps, rsg, brownianBridge));
     
     ext::shared_ptr<PathPricer<Path> > myPathPricer(new ReplicationPathPricer(payoff_.optionType(), payoff_.strike(),
-                                                                              r_, q_, maturity_, sigma_));
+                                                                              r_, q_, maturity_, sigma_, transactionCost_));
     Statistics statisticsAccumulator;
     
     MonteCarloModel<SingleVariate, PseudoRandom> MCSimulation(myPathGenerator, myPathPricer, statisticsAccumulator, false);
@@ -84,6 +84,7 @@ Real ReplicationPathPricer::operator()(const Path& path) const
     for (Size step = 0; step<n-1;step++)
     {
         t += dt; // time passes
+        Real cashdiff = delta-stockAmount;
         money_account *= std::exp(r_*dt);
         stock = path[step+1];
         rDiscount = std::exp(-r_*(maturity_-t));
@@ -93,7 +94,16 @@ Real ReplicationPathPricer::operator()(const Path& path) const
         BlackCalculator black(payoff, forward, stdDev, rDiscount);
         
         delta = black.delta(stock);
-        money_account -=(delta-stockAmount)*stock; // rehedging
+        
+        if (cashdiff >=0)
+        {
+            money_account = money_account -(delta-stockAmount)*stock;
+        }
+        else if (cashdiff < 0)
+        {
+            money_account = money_account -(delta-stockAmount)*stock * (1-transactionCost_);
+        }
+         // rehedging
         stockAmount = delta;
     }
         // at maturity //

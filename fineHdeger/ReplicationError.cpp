@@ -58,4 +58,55 @@ void ReplicationError::compute(Size nTimeSteps, Size nSamples)
 Real ReplicationPathPricer::operator()(const Path& path) const
 {
     Size n = path.length() - 1;
+    QL_REQUIRE(n>0, "the path cannot be empty");
+    
+    Time dt = maturity_/n;
+    //Rate stockDividendYield = q_;
+    
+    // simulation
+    Time t =0;
+    Real stock= path.front();
+    Real money_account = 0.0;
+    
+    DiscountFactor rDiscount = std::exp(-r_*maturity_);
+    DiscountFactor qDiscount = std::exp(-q_*maturity_);
+    Real forward = stock * qDiscount / rDiscount;
+    Real stdDev = std::sqrt(sigma_*sigma_*maturity_);
+    ext::shared_ptr<StrikedTypePayoff> payoff(new PlainVanillaPayoff(type_, strike_));
+    
+    BlackCalculator black(payoff, forward, stdDev, rDiscount);
+    money_account += black.value();
+    Real delta = black.delta(stock);
+    Real stockAmount = delta;
+    money_account -= stockAmount*stock;
+    
+    // hedging //
+    for (Size step = 0; step<n-1;step++)
+    {
+        t += dt; // time passes
+        money_account *= std::exp(r_*dt);
+        stock = path[step+1];
+        rDiscount = std::exp(-r_*(maturity_-t));
+        qDiscount = std::exp(-q_*(maturity_-t));
+        forward = stock*qDiscount/rDiscount;
+        stdDev=std::sqrt(sigma_*sigma_*(maturity_-t));
+        BlackCalculator black(payoff, forward, stdDev, rDiscount);
+        
+        delta = black.delta(stock);
+        money_account -=(delta-stockAmount)*stock; // rehedging
+        stockAmount = delta;
+        
+        // at maturity //
+        money_account *= std::exp(r_*dt);
+        stock = path[n];
+        Real optionPayoff = PlainVanillaPayoff(type_, strike_)(stock);
+        money_account -= optionPayoff;
+        money_account += stockAmount *stock;
+        return money_account;
+        
 }
+    
+    
+    
+}
+

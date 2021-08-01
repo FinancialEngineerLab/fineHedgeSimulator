@@ -6,10 +6,12 @@
 #ifndef ReplicationError_h
 #define ReplicationError_h
 
+using namespace QuantLib;
+
 class ReplicationError
 {
 public:
-    ReplicationError(Option::Type type, Time maturity, Real strike, Real s0, Volatility simga, Rate r, Rate q) :
+    ReplicationError(Option::Type type, Time maturity, Real strike, Real s0,QuantLib::Rateatility simga, Rate r, Rate q) :
     maturity_(maturity), payoff_(type, strike), s0_(s0), sigma_(sigma), r_(r), q_(q)
     {
         // for option BSM Price
@@ -70,6 +72,7 @@ private:
     Option::Type type_;
     Real strike_;
     Rate r_;
+    Rate q_;
     Time maturity_;
     Volatility sigma_;
 };

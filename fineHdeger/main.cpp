@@ -19,8 +19,39 @@ namespace QuantLib
 
 
 
-int main(int argc, const char * argv[]) {
-    // insert code here...
-    std::cout << "Hello, World!\n";
-    return 0;
+int main(int argc, const char * argv[])
+{
+    try
+    {
+        std::cout << std::endl;
+        Time maturity = 1.0 / 12.0;
+        Real strike = 100.0;
+        Real underlying = 100.0;
+        Volatility volatility = 0.20;
+        Rate riskFreeRate = 0.01;
+        Rate dividendRate = 0.01;
+        ReplicationError rp(Option::Call, maturity, strike, underlying, volatility, resikFreeRate, dividendRate);
+        Size scenarios = 20000;
+        Size hedgesNum;
+        
+        hedgesNum = 21;
+        std::cout << " Hedge : " << hedgesNum << "hedging number " <<std::endl;
+        rp.compute(hedgesNum, scenarios);
+        
+        hedgesNum = 84;
+        std::cout << " Hedge : " << hedgesNum << "hedging number " <<std::endl;
+        rp.compute(hedgesNum, scenarios);
+        
+        return 0;
+    }
+    catch (std::exception& e)
+    {
+        std::cerr << e.what() << std::endl;
+        return 1;
+    }
+    catch (...)
+    {
+        std::cerr <<"Unknown Error" << std::endl;
+        return 1;
+    }
 }

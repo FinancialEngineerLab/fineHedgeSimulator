@@ -32,7 +32,8 @@ int main(int argc, const char * argv[])
         Volatility volatility = 0.20;
         Rate riskFreeRate = 0.01;
         Rate dividendRate = 0.01;
-        ReplicationError rp(Option::Call, maturity, strike, underlying, volatility, riskFreeRate, dividendRate, 0);
+        Real transactionCost = 0.00015;
+        ReplicationError rp(Option::Call, maturity, strike, underlying, volatility, riskFreeRate, dividendRate, transactionCost);
         Size scenarios = 20000;
         Size hedgesNum;
         

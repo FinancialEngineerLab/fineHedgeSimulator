@@ -1,7 +1,7 @@
 
 #include <ql/quantlib.hpp>
 #include <iostream>
-#include <iiomanip>
+#include <iomanip>
 
 #ifndef ReplicationError_h
 #define ReplicationError_h

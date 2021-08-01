@@ -1,11 +1,23 @@
-//
-//  main.cpp
-//  fineHdeger
-//
-//  Created by hyunjinshin on 2021/08/01.
-//
+
+#include <ql/quantlib.hpp>
+
+#ifdef BOOST_MSVC
+#   include <ql/auto_link.hpp>
+#endif
 
 #include <iostream>
+#include <iomanip>
+
+using namespace QuantLib;
+
+#if defined(QL_ENBALE_SESSIONS)
+namespace QuantLib
+{
+    Threadey sessionId() { return {};}
+}
+#endif
+
+
 
 int main(int argc, const char * argv[]) {
     // insert code here...

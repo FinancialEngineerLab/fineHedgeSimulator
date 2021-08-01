@@ -95,7 +95,7 @@ Real ReplicationPathPricer::operator()(const Path& path) const
         delta = black.delta(stock);
         money_account -=(delta-stockAmount)*stock; // rehedging
         stockAmount = delta;
-        
+    }
         // at maturity //
         money_account *= std::exp(r_*dt);
         stock = path[n];
@@ -108,5 +108,4 @@ Real ReplicationPathPricer::operator()(const Path& path) const
     
     
     
-}
 

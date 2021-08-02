@@ -4,7 +4,7 @@ This Program is used for hedging simulation to analyize impact of hedging number
 
 
 main refernece:
-Volatility Smile, Ch.5 (Derman)
+Volatility Smile, Ch.5 ~ Ch.6 (Derman)
 
 Derman & Kamal's
 (Goldman Sachs Equity Derivatives Research) Research Note: "When You Cannot Hedge Continuously: The Corrections to Black-Scholes"

@@ -8,7 +8,10 @@ This Program is used for discrete dynamic hedging simulation to analyize impact 
 
 main refernece:
 
-Volatility Smile, Ch.5 ~ Ch.6 (Derman)
+Emanuel Derman's
+Ch5. The Effect of Discrete Hedging on P&L, Volatility Smile (2016)
+Ch6. The Effect of Transaction cost on P&L, Volatility Smile (2016)
+
 
 Derman & Kamal's
 (Goldman Sachs Equity Derivatives Research) Research Note: "When You Cannot Hedge Continuously: The Corrections to Black-Scholes"

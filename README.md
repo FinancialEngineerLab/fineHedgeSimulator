@@ -18,6 +18,62 @@ Derman & Kamal's
 (Goldman Sachs Equity Derivatives Research) Research Note: "When You Cannot Hedge Continuously: The Corrections to Black-Scholes"
     http://www.ederman.com/emanuelderman/GSQSpapers/when_you_cannot_hedge.pdf
 
+Sample Result
+Option Value: 2.34195
+
+ 
+
+         |          |      PnL |      PnL | Derman Kamal |      PnL |      PnL
+
+Samples |   Trades |     Mean |   Stddev |     formaula | Skewness | Kurtosis
+
+------------------------------------------------------------------------------
+
+ 
+
+Hedge : 21hedging number
+
+   50000 |       21 |   -0.044 |    0.427 |        0.445 |   -0.299 |    1.439
+
+ 
+
+ 
+
+Hedge : 84hedging number
+
+   50000 |       84 |   -0.044 |    0.220 |        0.222 |   -0.204 |    1.684
+
+ 
+
+ 
+
+*********** Mismatch of Drift *************
+
+Hedge : 84hedging number
+
+   50000 |       84 |   -0.044 |    0.220 |        0.222 |   -0.201 |    1.678
+
+ 
+
+ 
+
+*********** Mismatch of Volatility *************
+
+Hedge : 84hedging number
+
+   50000 |       84 |   -2.350 |    1.243 |        0.222 |   -0.655 |    0.052
+
+ 
+
+ 
+
+******* Mismatch of Volatility & Drift Term *******
+
+Hedge : 84hedging number
+
+   50000 |       84 |   -2.349 |    1.244 |        0.222 |   -0.654 |    0.040
+
+
 
 needs: 
 boost library

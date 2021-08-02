@@ -10,6 +10,7 @@ main refernece:
 
 Emanuel Derman's
 Ch5. The Effect of Discrete Hedging on P&L, Volatility Smile (2016)
+
 Ch6. The Effect of Transaction cost on P&L, Volatility Smile (2016)
 
 

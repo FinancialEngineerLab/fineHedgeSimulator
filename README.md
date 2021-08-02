@@ -4,7 +4,9 @@ This Program is used for discrete dynamic hedging simulation to analyize impact 
 
 2021-07-30 : hedging numbers transaction cost
 
-2021-08-?? : mismatch volatility and drift term, respectively
+2021-08-02 : mismatch volatility and drift term, respectively
+
+2021-08-?? : Gamma Hedging
 
 main refernece:
 

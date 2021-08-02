@@ -16,3 +16,10 @@ Ch6. The Effect of Transaction cost on P&L, Volatility Smile (2016)
 Derman & Kamal's
 (Goldman Sachs Equity Derivatives Research) Research Note: "When You Cannot Hedge Continuously: The Corrections to Black-Scholes"
     http://www.ederman.com/emanuelderman/GSQSpapers/when_you_cannot_hedge.pdf
+
+
+needs: 
+boost library
+quantlib library (1.21 ~)
+
+environment: xcode

@@ -11,6 +11,8 @@ using namespace QuantLib;
 class ReplicationError
 {
 public:
+
+
     ReplicationError(Option::Type type, Time maturity, Real strike, Real s0,Rate sigma, Rate r, Rate q, Real transactionCost) :
     maturity_(maturity), payoff_(type, strike), s0_(s0), sigma_(sigma), r_(r), q_(q), transactionCost_(transactionCost)
     {
@@ -42,9 +44,13 @@ public:
         << std::setw(8) << "Kurtosis" << std::endl;
         
         std::cout << std::string(78, '-') << std::endl;
+		initialSimul();
     }
     
     void compute(Size nTimeSteps, Size nSamples);
+	void initialSimul() { u_ = r_; simulSigma_ = sigma_; }
+	Rate u_;
+	Rate simulSigma_;
 
 private:
     Time maturity_;
@@ -55,6 +61,7 @@ private:
     Rate q_;
     Real vega_;
     Real transactionCost_;
+
 };
 
 class ReplicationPathPricer : public PathPricer<Path>
@@ -78,6 +85,5 @@ private:
     Volatility sigma_;
     Real transactionCost_;
 };
-
 
 #endif /* ReplicationError_h */

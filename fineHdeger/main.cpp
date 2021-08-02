@@ -30,22 +30,76 @@ int main(int argc, const char * argv[])
         Real strike = 100.0;
         Real underlying = 100.0;
         Volatility volatility = 0.20;
-        Rate riskFreeRate = 0.01;
+        Rate riskFreeRate = 0.02;
         Rate dividendRate = 0.01;
         Real transactionCost = 0.00015;
+		
         ReplicationError rp(Option::Call, maturity, strike, underlying, volatility, riskFreeRate, dividendRate, transactionCost);
-        Size scenarios = 20000;
+
+
+		Size scenarios = 50000;
         Size hedgesNum;
-        
+
+		std::cout << std::endl;
+
+
         hedgesNum = 21;
         std::cout << " Hedge : " << hedgesNum << "hedging number " <<std::endl;
         rp.compute(hedgesNum, scenarios);
-        
+
+		std::cout << std::endl;
+
+		std::cout << std::endl;
+
+
         hedgesNum = 84;
         std::cout << " Hedge : " << hedgesNum << "hedging number " <<std::endl;
         rp.compute(hedgesNum, scenarios);
         
-        hedgesNum = 84;
+
+		std::cout << std::endl;
+
+		std::cout << std::endl;
+
+
+		std::cout << "*********** Mismatch of Drift *************" << std::endl;
+		hedgesNum = 84;
+		rp.u_ = 0.04;
+		std::cout << " Hedge : " << hedgesNum << "hedging number " << std::endl;
+		rp.compute(hedgesNum, scenarios);
+
+		std::cout << std::endl;
+
+
+		std::cout << std::endl;
+
+
+		std::cout << "*********** Mismatch of Volatility *************" << std::endl;
+		rp.simulSigma_ = 0.4;
+		hedgesNum = 84;
+		std::cout << " Hedge : " << hedgesNum << "hedging number " << std::endl;
+		rp.compute(hedgesNum, scenarios);
+
+		std::cout << std::endl;
+
+
+		std::cout << std::endl;
+
+
+		std::cout << "******* Mismatch of Volatility & Drift Term *******" << std::endl;
+		rp.u_ = 0.01;
+		rp.simulSigma_ = 0.4;
+		hedgesNum = 84;
+		std::cout << " Hedge : " << hedgesNum << "hedging number " << std::endl;
+		rp.compute(hedgesNum, scenarios);
+
+		std::cout << std::endl;
+
+
+		std::cout << std::endl;
+
+
+        //hedgesNum = 84;
         
         return 0;
     }

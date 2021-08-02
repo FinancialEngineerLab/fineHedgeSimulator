@@ -1,7 +1,9 @@
 # fineHedger
 
-This Program is used for hedging simulation to analyize impact of hedging numbers, transcation cost, mismatch of volatility and mismatch of drift term.
+This Program is used for discrete dynamic hedging simulation to analyize impact of hedging numbers, transcation cost, mismatch of volatility and mismatch of drift term.
 
+2021-07-30 : hedging numbers transaction cost
+2021-08-?? : mismatch volatility and drift term, respectively
 
 main refernece:
 Volatility Smile, Ch.5 ~ Ch.6 (Derman)

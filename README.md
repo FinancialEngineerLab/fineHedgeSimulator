@@ -8,7 +8,10 @@ This Program is used for discrete dynamic hedging simulation to analyize impact 
 
 2021-08-02 : mismatch volatility and drift term, respectively
 
-2021-08-10 : Optimal Hedging Trading Numbers with Objective Functions
+2021-08-10 : Optimal Hedging Trading Numbers with Objective Functions as Optimization
+
+2021-08-? : Gamma Trading
+
 
 main refernece:
 

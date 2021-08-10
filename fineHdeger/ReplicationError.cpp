@@ -1,5 +1,6 @@
 
 #include "ReplicationError.hpp"
+#
 #include <stdio.h>
 
 using namespace QuantLib;
@@ -9,7 +10,7 @@ using namespace std;
 void ReplicationError::compute(Size nTimeSteps, Size nSamples)
 {
     QL_REQUIRE(nTimeSteps>0, "the number of steps must be > 0");
-    
+	initialHedge();
     // if interval set,
     // Time tau = maturity_ / nTimeSteps;
     
@@ -36,24 +37,27 @@ void ReplicationError::compute(Size nTimeSteps, Size nSamples)
     MonteCarloModel<SingleVariate, PseudoRandom> MCSimulation(myPathGenerator, myPathPricer, statisticsAccumulator, false);
     MCSimulation.addSamples(nSamples);
     
-    Real PLMean = MCSimulation.sampleAccumulator().mean();
-    Real PLStddev = MCSimulation.sampleAccumulator().standardDeviation();
-    Real PLSkew = MCSimulation.sampleAccumulator().skewness();
-    Real PLKurt = MCSimulation.sampleAccumulator().kurtosis();
+    PLMean = MCSimulation.sampleAccumulator().mean();
+    PLStddev = MCSimulation.sampleAccumulator().standardDeviation();
+    PLSkew = MCSimulation.sampleAccumulator().skewness();
+    PLKurt = MCSimulation.sampleAccumulator().kurtosis();
     
     // Derman and Kamil //
-    Real theorStD = std::sqrt(M_PI/4/nTimeSteps)*vega_*sigma_;
-    std::cout << std::fixed
-    << std::setprecision(3)
-    <<std::setw(8) << nSamples << " | "
-    <<std::setw(8) << nTimeSteps << " | "
-    <<std::setw(8) << PLMean << " | "
-    <<std::setw(8) << PLStddev << " | "
-    <<std::setw(12) << theorStD << " | "
-    <<std::setw(8) << PLSkew << " | "
-    <<std::setw(8) << PLKurt << std::endl;
-    
+    theorStD = std::sqrt(M_PI/4/nTimeSteps)*vega_*sigma_;
 }
+
+void ReplicationError::printResult()
+{
+	std::cout << std::fixed << std::setprecision(3)
+		<< std::setw(8) << nSamples << " | "
+		<< std::setw(8) << nTimeSteps << " | "
+		<< std::setw(8) << PLMean << " | "
+		<< std::setw(8) << PLStddev << " | "
+		<< std::setw(12) << theorStD << " | "
+		<< std::setw(8) << PLSkew << " | "
+		<< std::setw(8) << PLKurt << std::endl;
+}
+
 
 Real ReplicationPathPricer::operator()(const Path& path) const
 {
@@ -117,5 +121,27 @@ Real ReplicationPathPricer::operator()(const Path& path) const
 }
     
     
-    
+ 
 
+void ReplicationError::optimalHedging(Size maxDt)
+{
+	vector<pair<Real, Real>> objectInput;
+	vector<Real> objectFunc;
+	Size startDt = 1;
+
+	for (Size dt = startDt; dt < maxDt; dt++)
+	{
+		compute(dt, nSamples);
+		objectInput.push_back(make_pair(PLMean, PLStddev));
+		objectFunc.push_back(objectInput[dt].first + objectInput[dt].second);
+	}
+
+	/*
+	for (Size i = 0; i < objectInput.size(); i++)
+	{
+		objectFunc.push_back(objectInput[i].first + objectInput[i].second);
+	}
+	*/
+	int min_index = min_element(objectFunc.begin(), objectFunc.end()) - objectFunc.begin()- startDt;
+	std::cout << "Optimal Hedge Numbers / Counts : " << min_index << std::endl;
+}

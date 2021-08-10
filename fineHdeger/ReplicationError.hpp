@@ -2,6 +2,7 @@
 #include <ql/quantlib.hpp>
 #include <iostream>
 #include <iomanip>
+#include <vector>
 
 #ifndef ReplicationError_h
 #define ReplicationError_h
@@ -48,9 +49,37 @@ public:
     }
     
     void compute(Size nTimeSteps, Size nSamples);
-	void initialSimul() { u_ = r_; simulSigma_ = sigma_; }
+	void optimalHedging(Size maxDt);
+	void printResult();
+
+	void initialSimul()
+	{
+		u_ = r_;
+		simulSigma_ = sigma_;
+	}
+
+	void initialHedge()
+	{
+		PLMean = 0;
+		PLStddev = 0;
+		PLSkew = 0;
+		PLKurt = 0;
+		theorStD = 0;
+	}
+
 	Rate u_;
 	Rate simulSigma_;
+
+	Size scenarios;
+	Size nTimeSteps;
+	//static Size hedgesNum;
+
+	Size nSamples =0;
+	Real PLMean;
+	Real PLStddev;
+	Real PLSkew;
+	Real PLKurt;
+	Real theorStD;
 
 private:
     Time maturity_;

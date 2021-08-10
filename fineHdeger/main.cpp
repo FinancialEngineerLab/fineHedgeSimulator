@@ -34,40 +34,42 @@ int main(int argc, const char * argv[])
         Rate dividendRate = 0.01;
         Real transactionCost = 0.00015;
 		
+
+		
         ReplicationError rp(Option::Call, maturity, strike, underlying, volatility, riskFreeRate, dividendRate, transactionCost);
 
-
-		Size scenarios = 50000;
-        Size hedgesNum;
-
-		std::cout << std::endl;
-
-
-        hedgesNum = 21;
-        std::cout << " Hedge : " << hedgesNum << "hedging number " <<std::endl;
-        rp.compute(hedgesNum, scenarios);
-
-		std::cout << std::endl;
+		rp.nSamples = 2000;
+		rp.nTimeSteps = 21;
+		rp.PLMean = 0;
+		rp.PLStddev = 0;
+		rp.PLSkew = 0;
+		rp.PLKurt = 0;
+		rp.theorStD = 0;
 
 		std::cout << std::endl;
 
 
-        hedgesNum = 84;
-        std::cout << " Hedge : " << hedgesNum << "hedging number " <<std::endl;
-        rp.compute(hedgesNum, scenarios);
-        
+        std::cout << " Hedge : " << rp.nTimeSteps << "hedging number " <<std::endl;
+        rp.compute(rp.nTimeSteps, rp.nSamples);
+		rp.printResult();
 
 		std::cout << std::endl;
 
-		std::cout << std::endl;
 
+        rp.nTimeSteps = 84;
+		std::cout << " Hedge : " << rp.nTimeSteps << "hedging number " << std::endl;
+		rp.compute(rp.nTimeSteps, rp.nSamples);
+		rp.printResult();
+
+		std::cout << std::endl;
+		std::cout << std::endl;
 
 		std::cout << "*********** Mismatch of Drift *************" << std::endl;
-		hedgesNum = 84;
+		rp.nTimeSteps = 84;
 		rp.u_ = 0.04;
-		std::cout << " Hedge : " << hedgesNum << "hedging number " << std::endl;
-		rp.compute(hedgesNum, scenarios);
-
+		std::cout << " Hedge : " << rp.nTimeSteps << "hedging number " << std::endl;
+		rp.compute(rp.nTimeSteps, rp.nSamples);
+		rp.printResult();
 		std::cout << std::endl;
 
 
@@ -76,10 +78,10 @@ int main(int argc, const char * argv[])
 
 		std::cout << "*********** Mismatch of Volatility *************" << std::endl;
 		rp.simulSigma_ = 0.4;
-		hedgesNum = 84;
-		std::cout << " Hedge : " << hedgesNum << "hedging number " << std::endl;
-		rp.compute(hedgesNum, scenarios);
-
+		rp.nTimeSteps = 84;
+		std::cout << " Hedge : " << rp.nTimeSteps << "hedging number " << std::endl;
+		rp.compute(rp.nTimeSteps, rp.nSamples);
+		rp.printResult();
 		std::cout << std::endl;
 
 
@@ -89,17 +91,19 @@ int main(int argc, const char * argv[])
 		std::cout << "******* Mismatch of Volatility & Drift Term *******" << std::endl;
 		rp.u_ = 0.01;
 		rp.simulSigma_ = 0.4;
-		hedgesNum = 84;
-		std::cout << " Hedge : " << hedgesNum << "hedging number " << std::endl;
-		rp.compute(hedgesNum, scenarios);
+		rp.nTimeSteps = 84;
+		std::cout << " Hedge : " << rp.nTimeSteps << "hedging number " << std::endl;
+		rp.compute(rp.nTimeSteps, rp.nSamples);
+		rp.printResult();
 
 		std::cout << std::endl;
 
-
 		std::cout << std::endl;
-
-
-        //hedgesNum = 84;
+		std::cout << std::endl;
+		std::cout << "***** Optimal Hedging with Transaction cost *****" << std::endl;
+		rp.optimalHedging(100);
+		std::cout << std::endl;
+        //nTimeSteps = 84;
         
         return 0;
     }

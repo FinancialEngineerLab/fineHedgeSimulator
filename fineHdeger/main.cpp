@@ -77,8 +77,10 @@ int main(int argc, const char * argv[])
 
 
 		std::cout << "*********** Mismatch of Volatility *************" << std::endl;
-		rp.simulSigma_ = 0.4;
+		rp.simulSigma_ = 0.18;
 		rp.nTimeSteps = 84;
+        std::cout << " Realized Volatilty " <<  volatility << std::endl;
+        std::cout << " Inputted Volatility " << rp.simulSigma_ << std::endl;
 		std::cout << " Hedge : " << rp.nTimeSteps << "hedging number " << std::endl;
 		rp.compute(rp.nTimeSteps, rp.nSamples);
 		rp.printResult();

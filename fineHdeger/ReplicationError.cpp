@@ -1,7 +1,7 @@
 
 #include "ReplicationError.hpp"
-#
 #include <stdio.h>
+#include <vector>
 
 using namespace QuantLib;
 using namespace std;
@@ -37,6 +37,15 @@ void ReplicationError::compute(Size nTimeSteps, Size nSamples)
     MonteCarloModel<SingleVariate, PseudoRandom> MCSimulation(myPathGenerator, myPathPricer, statisticsAccumulator, false);
     MCSimulation.addSamples(nSamples);
     
+    /*
+    for (Size i = 0; i < nSamples; i++)
+    {
+        for (Size j = 0; j < 1/nTimeSteps;j++)
+        {
+            pnlPaths.push_back(MCSimulation.sampleAccumulator().data());
+        }
+    }
+*/
     PLMean = MCSimulation.sampleAccumulator().mean();
     PLStddev = MCSimulation.sampleAccumulator().standardDeviation();
     PLSkew = MCSimulation.sampleAccumulator().skewness();
@@ -142,6 +151,10 @@ void ReplicationError::optimalHedging(Size maxDt)
 		objectFunc.push_back(objectInput[i].first + objectInput[i].second);
 	}
 	*/
-	int min_index = min_element(objectFunc.begin(), objectFunc.end()) - objectFunc.begin()- startDt;
+	unsigned int min_index = min_element(objectFunc.begin(), objectFunc.end()) - objectFunc.begin()- startDt;
 	std::cout << "Optimal Hedge Numbers / Counts : " << min_index << std::endl;
 }
+
+
+
+

@@ -3,11 +3,13 @@
 #include <iostream>
 #include <iomanip>
 #include <vector>
+#include <cmath>
 
 #ifndef ReplicationError_h
 #define ReplicationError_h
 
 using namespace QuantLib;
+using namespace std;
 
 class ReplicationError
 {
@@ -28,6 +30,7 @@ public:
         
         //for option BSM Vega
         vega_ = black.vega(maturity_);
+        
         std::cout << std::endl;
         std::cout << std::setw(8) << " " << " | "
                   << std::setw(8) << " " << " | "
@@ -52,6 +55,9 @@ public:
 	void optimalHedging(Size maxDt);
 	void printResult();
 
+    
+    //vector<pair<Size, Size> getPnL(Time time, Size nTimeSteps, Size nSamples);
+    
 	void initialSimul()
 	{
 		u_ = r_;
@@ -73,14 +79,18 @@ public:
 	Size scenarios;
 	Size nTimeSteps;
 	//static Size hedgesNum;
-
+    Volatility inputVol;
+    Time time;
+    
 	Size nSamples =0;
 	Real PLMean;
 	Real PLStddev;
 	Real PLSkew;
 	Real PLKurt;
 	Real theorStD;
-
+    vector <pair<Real, Real> > pnlPaths;
+    Matrix pnlPaths2(Size i, Size j);
+    
 private:
     Time maturity_;
     PlainVanillaPayoff payoff_;
@@ -93,6 +103,7 @@ private:
 
 };
 
+
 class ReplicationPathPricer : public PathPricer<Path>
 {
 public:
@@ -104,7 +115,6 @@ public:
         QL_REQUIRE(sigma_ >= 0.0, "volatility must be equal or larger than zero");
     }
     Real operator()(const Path& path) const override;
-    
 private:
     Option::Type type_;
     Real strike_;
@@ -116,3 +126,4 @@ private:
 };
 
 #endif /* ReplicationError_h */
+

@@ -24,7 +24,6 @@ void ReplicationError::compute(Size nTimeSteps, Size nSamples)
     ext::shared_ptr<StochasticProcess1D> diffusion(new BlackScholesMertonProcess(stateVariable, dividendYield, riskFreeRate, volatility));
     
     //
-    
     PseudoRandom::rsg_type rsg = PseudoRandom::make_sequence_generator(nTimeSteps, 1);
     bool brownianBridge = false;
     typedef SingleVariate<PseudoRandom>::path_generator_type generator_type;
@@ -33,10 +32,25 @@ void ReplicationError::compute(Size nTimeSteps, Size nSamples)
     ext::shared_ptr<PathPricer<Path> > myPathPricer(new ReplicationPathPricer(payoff_.optionType(), payoff_.strike(),
                                                                               r_, q_, maturity_, sigma_, transactionCost_));
     Statistics statisticsAccumulator;
-    
     MonteCarloModel<SingleVariate, PseudoRandom> MCSimulation(myPathGenerator, myPathPricer, statisticsAccumulator, false);
     MCSimulation.addSamples(nSamples);
     
+    PLMean = MCSimulation.sampleAccumulator().mean();
+    PLStddev = MCSimulation.sampleAccumulator().standardDeviation();
+    PLSkew = MCSimulation.sampleAccumulator().skewness();
+    PLKurt = MCSimulation.sampleAccumulator().kurtosis();
+    
+    // Derman and Kamil //
+    theorStD = std::sqrt(M_PI/4/nTimeSteps)*vega_*sigma_;
+    
+    // // //
+    std::vector<pair<Real, Real> > temp1;
+    temp1= MCSimulation.sampleAccumulator().data();
+    
+    for (Size i =0; i<temp1.size(); i++)
+    {
+        tempPaths.push_back(temp1[i].first);
+    }
     /*
     for (Size i = 0; i < nSamples; i++)
     {
@@ -45,14 +59,7 @@ void ReplicationError::compute(Size nTimeSteps, Size nSamples)
             pnlPaths.push_back(MCSimulation.sampleAccumulator().data());
         }
     }
-*/
-    PLMean = MCSimulation.sampleAccumulator().mean();
-    PLStddev = MCSimulation.sampleAccumulator().standardDeviation();
-    PLSkew = MCSimulation.sampleAccumulator().skewness();
-    PLKurt = MCSimulation.sampleAccumulator().kurtosis();
-    
-    // Derman and Kamil //
-    theorStD = std::sqrt(M_PI/4/nTimeSteps)*vega_*sigma_;
+   */
 }
 
 void ReplicationError::printResult()
@@ -105,7 +112,6 @@ Real ReplicationPathPricer::operator()(const Path& path) const
         forward = stock*qDiscount/rDiscount;
         stdDev=std::sqrt(sigma_*sigma_*(maturity_-t));
         BlackCalculator black(payoff, forward, stdDev, rDiscount);
-        
         delta = black.delta(stock);
         
         if (cashdiff >=0)
@@ -138,23 +144,18 @@ void ReplicationError::optimalHedging(Size maxDt)
 	vector<Real> objectFunc;
 	Size startDt = 1;
 
-	for (Size dt = startDt; dt < maxDt; dt++)
+	for (Size dt = startDt; dt <= maxDt; dt++)
 	{
 		compute(dt, nSamples);
 		objectInput.push_back(make_pair(PLMean, PLStddev));
-		objectFunc.push_back(objectInput[dt].first + objectInput[dt].second);
+		objectFunc.push_back(objectInput[dt-1].first + objectInput[dt-1].second);
 	}
 
-	/*
-	for (Size i = 0; i < objectInput.size(); i++)
-	{
-		objectFunc.push_back(objectInput[i].first + objectInput[i].second);
-	}
-	*/
-	unsigned int min_index = min_element(objectFunc.begin(), objectFunc.end()) - objectFunc.begin()- startDt;
-	std::cout << "Optimal Hedge Numbers / Counts : " << min_index << std::endl;
+    Size min_index;
+    min_index = min_element(objectFunc.begin(), objectFunc.end()) - objectFunc.begin()- startDt + 1;
+    optimalTimes = min_index;
+	std::cout << "Optimal Hedge Numbers / Counts : " << optimalTimes << std::endl;
 }
-
 
 
 

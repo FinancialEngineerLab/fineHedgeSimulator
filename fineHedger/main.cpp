@@ -130,8 +130,8 @@ int main(int argc, const char * argv[])
             Time n = rp.nTimeSteps;
             Time m = i;
             rp.maturity_ = m / n;
-            rp.nTimeSteps = i;
-            rp.compute(rp.nTimeSteps, rp.nSamples);
+            //rp.nTimeSteps = i;
+            rp.compute(i, rp.nSamples);
             
             for(Size j = 0; j<rp.nSamples;j++)
             {

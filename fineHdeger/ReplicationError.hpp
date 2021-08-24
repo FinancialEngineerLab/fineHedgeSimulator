@@ -71,6 +71,8 @@ public:
 		PLSkew = 0;
 		PLKurt = 0;
 		theorStD = 0;
+        tempPaths.clear();
+        optimalTimes = nTimeSteps;
 	}
 
 	Rate u_;
@@ -88,11 +90,15 @@ public:
 	Real PLSkew;
 	Real PLKurt;
 	Real theorStD;
-    vector <pair<Real, Real> > pnlPaths;
+    Real optimalTimes;
+    
+    std::vector <pair<Real, Real> > pnlPaths;
+    std::vector <Real> tempPaths;
     Matrix pnlPaths2(Size i, Size j);
     
-private:
+    
     Time maturity_;
+private:
     PlainVanillaPayoff payoff_;
     Real s0_;
     Volatility sigma_;
@@ -115,6 +121,8 @@ public:
         QL_REQUIRE(sigma_ >= 0.0, "volatility must be equal or larger than zero");
     }
     Real operator()(const Path& path) const override;
+    
+    
 private:
     Option::Type type_;
     Real strike_;
@@ -123,6 +131,7 @@ private:
     Time maturity_;
     Volatility sigma_;
     Real transactionCost_;
+    
 };
 
 #endif /* ReplicationError_h */

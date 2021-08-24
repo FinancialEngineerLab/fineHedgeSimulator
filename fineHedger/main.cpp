@@ -33,13 +33,13 @@ int main(int argc, const char * argv[])
         Rate riskFreeRate = 0.02;
         Rate dividendRate = 0.01;
         Real transactionCost = 0.00015;
-		
+        Size TimeStep = 21;
 
 		
         ReplicationError rp(Option::Call, maturity, strike, underlying, volatility, riskFreeRate, dividendRate, transactionCost);
-
+        
 		rp.nSamples = 2000;
-		rp.nTimeSteps = 21;
+		rp.nTimeSteps = TimeStep;
 		rp.PLMean = 0;
 		rp.PLStddev = 0;
 		rp.PLSkew = 0;
@@ -48,6 +48,7 @@ int main(int argc, const char * argv[])
 
 		std::cout << std::endl;
 
+        std::cout << std::endl;
 
         std::cout << " Hedge : " << rp.nTimeSteps << "hedging number " <<std::endl;
         rp.compute(rp.nTimeSteps, rp.nSamples);
@@ -92,7 +93,7 @@ int main(int argc, const char * argv[])
 
 		std::cout << "******* Mismatch of Volatility & Drift Term *******" << std::endl;
 		rp.u_ = 0.01;
-		rp.simulSigma_ = 0.4;
+		rp.simulSigma_ = 0.1;
 		rp.nTimeSteps = 84;
 		std::cout << " Hedge : " << rp.nTimeSteps << "hedging number " << std::endl;
 		rp.compute(rp.nTimeSteps, rp.nSamples);
@@ -105,7 +106,44 @@ int main(int argc, const char * argv[])
 		std::cout << "***** Optimal Hedging with Transaction cost *****" << std::endl;
 		rp.optimalHedging(100);
 		std::cout << std::endl;
-        //nTimeSteps = 84;
+        rp.nTimeSteps = rp.optimalTimes;
+        rp.compute(rp.optimalTimes, rp.nSamples);
+        std::cout << "Optimal Hedge : " << rp.optimalTimes << "Optimal hedging number " << std::endl;
+        rp.printResult();
+        std::cout << std::endl;
+        std::cout << std::endl;
+        
+        
+        std::cout << std::endl;
+        std::cout << std::endl;
+        std::cout << "***** Hedging with Real Volatility *****" << std::endl;
+        
+        rp.nTimeSteps = 42;
+        vector < vector<Real> > TimePaths(rp.nTimeSteps, vector<Real>(rp.nSamples, 0));
+        
+        for(Time i = 1.0; i<=rp.nTimeSteps;i++)
+        {
+            Time n = rp.nTimeSteps;
+            rp.maturity_ = i / n;
+            rp.nTimeSteps = i;
+            rp.compute(rp.nTimeSteps, rp.nSamples);
+            
+            for(Size j = 0; j<rp.nSamples;j++)
+            {
+                Size z = i;
+                TimePaths[z-1].push_back(rp.tempPaths[j]);
+            }
+        }
+        
+        for(Size i = 0; i< TimePaths.size();i++)
+        {
+            for(Size j = 0; j < rp.nSamples;j++)
+            {
+                std::cout << "i = "<<i <<" j = " <<j << "Result : " << TimePaths[i][j];
+                std::cout << std::endl;
+            }
+        }
+        
         
         return 0;
     }

@@ -116,22 +116,26 @@ int main(int argc, const char * argv[])
         
         std::cout << std::endl;
         std::cout << std::endl;
+        std::cout << std::endl;
+        std::cout << std::endl;
+        std::cout << std::endl;
+        std::cout << std::endl;
         std::cout << "***** Hedging with Real Volatility *****" << std::endl;
         
         rp.nTimeSteps = 42;
         vector < vector<Real> > TimePaths(rp.nTimeSteps, vector<Real>(rp.nSamples, 0));
         
-        for(Time i = 1.0; i<=rp.nTimeSteps;i++)
+        for(Size i = 1.0; i<=rp.nTimeSteps;i++)
         {
             Time n = rp.nTimeSteps;
-            rp.maturity_ = i / n;
+            Time m = i;
+            rp.maturity_ = m / n;
             rp.nTimeSteps = i;
             rp.compute(rp.nTimeSteps, rp.nSamples);
             
             for(Size j = 0; j<rp.nSamples;j++)
             {
-                Size z = i;
-                TimePaths[z-1].push_back(rp.tempPaths[j]);
+                TimePaths[i-1][j] = rp.tempPaths[j];
             }
         }
         
@@ -139,7 +143,7 @@ int main(int argc, const char * argv[])
         {
             for(Size j = 0; j < rp.nSamples;j++)
             {
-                std::cout << "i = "<<i <<" j = " <<j << "Result : " << TimePaths[i][j];
+                std::cout << "i = "<<i <<" j = " <<j << ", Result : " << TimePaths[i][j];
                 std::cout << std::endl;
             }
         }

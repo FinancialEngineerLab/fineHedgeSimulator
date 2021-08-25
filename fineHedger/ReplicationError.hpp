@@ -54,7 +54,7 @@ public:
     
     //void compute(Size nTimeSteps, Size nSamples);
 
-	void compute(Size nTimeSteps, Size nSamples, Size inTimeSteps);
+	void compute(Size nTimeSteps, Size nSamples);
 	void optimalHedging(Size maxDt);
 	void printResult();
 

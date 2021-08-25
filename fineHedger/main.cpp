@@ -11,6 +11,7 @@
 #include <iomanip>
 
 using namespace QuantLib;
+using namespace std;
 
 #if defined(QL_ENBALE_SESSIONS)
 namespace QuantLib
@@ -20,25 +21,29 @@ namespace QuantLib
 #endif
 
 
+Real normalCDF(Real value);
+Real normalCDF(Real value)
+{
+	return 0.5*erfc(-value * M_SQRT1_2);
+}
 
 int main(int argc, const char * argv[])
 {
     try
     {
         std::cout << std::endl;
-        Time maturity = 1.0 / 12.0;
+        Time maturity = 3.0 / 12.0;
         Real strike = 100.0;
         Real underlying = 100.0;
         Volatility volatility = 0.20;
         Rate riskFreeRate = 0.02;
         Rate dividendRate = 0.01;
-        Real transactionCost = 0.00015;
+        Real transactionCost = 0.0;
         Size TimeStep = 21;
 
 		
         ReplicationError rp(Option::Call, maturity, strike, underlying, volatility, riskFreeRate, dividendRate, transactionCost);
-        
-		rp.nSamples = 2000;
+		rp.nSamples = 100;
 		rp.nTimeSteps = TimeStep;
 		rp.PLMean = 0;
 		rp.PLStddev = 0;
@@ -47,15 +52,17 @@ int main(int argc, const char * argv[])
 		rp.theorStD = 0;
 
 		std::cout << std::endl;
-
         std::cout << std::endl;
 
         std::cout << " Hedge : " << rp.nTimeSteps << "hedging number " <<std::endl;
         rp.compute(rp.nTimeSteps, rp.nSamples);
 		rp.printResult();
+		//Real OptionRealVolValue;
+		//OptionRealVolValue = rp.OptionValue_;
 
 		std::cout << std::endl;
-
+		std::cout << std::endl;
+		std::cout << std::endl;
 
         rp.nTimeSteps = 84;
 		std::cout << " Hedge : " << rp.nTimeSteps << "hedging number " << std::endl;
@@ -78,76 +85,152 @@ int main(int argc, const char * argv[])
 
 
 		std::cout << "*********** Mismatch of Volatility *************" << std::endl;
-		rp.simulSigma_ = 0.18;
+		std::cout << "*********** Hedging,Real Vol < Input, Implied Vol *************" << std::endl;
+		rp.HedgeVol_ = 0.15; // for hedging
 		rp.nTimeSteps = 84;
-        std::cout << " Realized Volatilty " <<  volatility << std::endl;
-        std::cout << " Inputted Volatility " << rp.simulSigma_ << std::endl;
+		
+        std::cout << " Input Volatilty " <<  volatility << std::endl;
+        std::cout << " Hedging Volatility " << rp.HedgeVol_ << std::endl;
 		std::cout << " Hedge : " << rp.nTimeSteps << "hedging number " << std::endl;
 		rp.compute(rp.nTimeSteps, rp.nSamples);
 		rp.printResult();
 		std::cout << std::endl;
 
+
+
+		std::cout << "*********** Mismatch of Volatility *************" << std::endl;
+		std::cout << "*********** Hedging,Real Vol > Input, Implied Vol *************" << std::endl;
+		rp.HedgeVol_ = 0.25;
+		rp.nTimeSteps = 84;
+
+		std::cout << " Input Volatilty " << volatility << std::endl;
+		std::cout << " Hedging Volatility " << rp.HedgeVol_ << std::endl;
+		std::cout << " Hedge : " << rp.nTimeSteps << "hedging number " << std::endl;
+		rp.compute(rp.nTimeSteps, rp.nSamples);
+		rp.printResult();
+		std::cout << std::endl;
 
 		std::cout << std::endl;
 
 
 		std::cout << "******* Mismatch of Volatility & Drift Term *******" << std::endl;
-		rp.u_ = 0.01;
-		rp.simulSigma_ = 0.1;
+		std::cout << "******* drift : u > r *******" << std::endl;
+		std::cout << "******* Vol : Hedging,Real Vol > Input, Implied Vol  *******" << std::endl;
+		rp.u_ = 0.05;
+		rp.HedgeVol_ = 0.25;
 		rp.nTimeSteps = 84;
+
+		std::cout << " Pricing Volatilty Small" << volatility << std::endl;
+		std::cout << " Hedging Volatility Big!" << rp.HedgeVol_ << std::endl;
 		std::cout << " Hedge : " << rp.nTimeSteps << "hedging number " << std::endl;
 		rp.compute(rp.nTimeSteps, rp.nSamples);
 		rp.printResult();
 
+		std::cout << "******* Therefore, Hedge Vol bigger, PnL Bigger  *******" << std::endl;
+		std::cout << "******* Therefore, drift bigger, PnL Loser  *******" << std::endl;
 		std::cout << std::endl;
 
 		std::cout << std::endl;
 		std::cout << std::endl;
-		std::cout << "***** Optimal Hedging with Transaction cost *****" << std::endl;
-		rp.optimalHedging(100);
+
 		std::cout << std::endl;
-        rp.nTimeSteps = rp.optimalTimes;
-        rp.compute(rp.optimalTimes, rp.nSamples);
-        std::cout << "Optimal Hedge : " << rp.optimalTimes << "Optimal hedging number " << std::endl;
-        rp.printResult();
+
+
+		std::cout << "***** Optimal Hedging with Transaction cost *****" << std::endl;
+
+		ReplicationError rpOpt(Option::Call, maturity, strike, underlying, volatility, riskFreeRate, dividendRate, transactionCost);
+		rpOpt.nSamples = 100;
+		rpOpt.nTimeSteps = TimeStep;
+		rpOpt.PLMean = 0;
+		rpOpt.PLStddev = 0;
+		rpOpt.PLSkew = 0;
+		rpOpt.PLKurt = 0;
+		rpOpt.theorStD = 0;
+		rpOpt.optimalHedging(100);
+		std::cout << std::endl;
+		rpOpt.nTimeSteps = rpOpt.optimalTimes;
+		rpOpt.compute(rpOpt.optimalTimes, rpOpt.nSamples);
+        std::cout << "Optimal Hedge : " << rpOpt.optimalTimes << "Optimal hedging number " << std::endl;
+		rpOpt.printResult();
+
         std::cout << std::endl;
         std::cout << std::endl;
         
         
         std::cout << std::endl;
         std::cout << std::endl;
+
         std::cout << std::endl;
-        std::cout << std::endl;
-        std::cout << std::endl;
-        std::cout << std::endl;
-        std::cout << "***** Hedging with Real Volatility *****" << std::endl;
-        
-        rp.nTimeSteps = 42;
-        vector < vector<Real> > TimePaths(rp.nTimeSteps, vector<Real>(rp.nSamples, 0));
-        
-        for(Size i = 1.0; i<=rp.nTimeSteps;i++)
+
+		/*
+        std::cout << "***** Hedging with Underestimated Real Volatility *****" << std::endl;
+
+		rp.nTimeSteps = 1000;
+		rp.nSamples = 20;
+
+		Volatility HedgeVol; // for hedigng 
+		Volatility InputVol;  // for pricing
+		HedgeVol = 0.3;
+		InputVol = 0.2;
+
+		ReplicationError rpInput(Option::Call, maturity, strike, underlying, HedgeVol, riskFreeRate, dividendRate, 0);
+		rpInput.nTimeSteps = rp.nTimeSteps;
+		rpInput.nSamples = rp.nSamples;
+		rpInput.HedgeVol_ = HedgeVol;
+		rpInput.compute(rp.nTimeSteps, rp.nSamples, rp.nTimeSteps);
+		
+		ReplicationError rpReal(Option::Call, maturity, strike, underlying, InputVol, riskFreeRate, dividendRate, 0);
+		rpReal.nTimeSteps = rp.nTimeSteps;
+		rpReal.nSamples = rp.nSamples;
+		rpReal.HedgeVol_ = InputVol;
+		rpReal.compute(rp.nTimeSteps, rp.nSamples, rp.nTimeSteps);
+
+		Real OptionHedgeVolValue = rpInput.OptionValue_;
+		Real OptionRealVolValue = rpReal.OptionValue_;
+
+
+		ReplicationError rpMismatch(Option::Call, maturity, strike, underlying, InputVol, riskFreeRate, dividendRate, 0);
+		rpMismatch.nTimeSteps = rp.nTimeSteps;
+		rpMismatch.nSamples = rp.nSamples;
+		rpMismatch.HedgeVol_ = HedgeVol; // for hedging 
+		rpMismatch.compute(rp.nTimeSteps, rp.nSamples, rp.nTimeSteps);
+
+        vector < vector<Real> > TimePaths(rpMismatch.nTimeSteps, vector<Real>(rpMismatch.nSamples, 0));
+		vector < Real> Lowerbounds;
+		Real Upperbound = OptionHedgeVolValue - OptionRealVolValue;
+		Real Lowerbound;
+		Lowerbounds.clear();
+
+        for(Size i = 1.0; i<= rp.nTimeSteps;i++)
         {
+			rpMismatch.HedgeVol_ = HedgeVol;
             Time n = rp.nTimeSteps;
             Time m = i;
-            rp.maturity_ = m / n;
+			rpMismatch.maturity_ = m / n * maturity;
+			
             //rp.nTimeSteps = i;
-            rp.compute(i, rp.nSamples);
-            
-            for(Size j = 0; j<rp.nSamples;j++)
+            //rp.compute(i, rp.nSamples);
+			rpMismatch.compute(rp.nTimeSteps, rp.nSamples, rp.nTimeSteps);
+
+            for(Size j = 0; j< rp.nSamples;j++)
             {
-                TimePaths[i-1][j] = rp.tempPaths[j];
+                TimePaths[i-1][j] = rpMismatch.tempPaths[j];
             }
+			Lowerbound = Upperbound - 2 * strike * std::exp(-(riskFreeRate-0) *(rpMismatch.maturity_)) *
+				(normalCDF(0.5*(HedgeVol - InputVol)*std::sqrt(rpMismatch.maturity_)) - 0.5);
+			Lowerbounds.push_back(Lowerbound);
         }
         
         for(Size i = 0; i< TimePaths.size();i++)
         {
             for(Size j = 0; j < rp.nSamples;j++)
             {
-                std::cout << "i = "<<i <<" j = " <<j << ", Result : " << TimePaths[i][j];
+				std::cout << "i = " << i + 1 << " j = " << j + 1 << ", Result : " << TimePaths[i][j]
+					<< ", Upper Bound : " << Upperbound << ", Lower Bound : " << Lowerbounds[i] << std::endl;
                 std::cout << std::endl;
             }
         }
-        
+        */
         
         return 0;
     }

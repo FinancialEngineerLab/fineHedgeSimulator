@@ -2,6 +2,8 @@
 #include "ReplicationError.hpp"
 #include <stdio.h>
 #include <vector>
+#include <cmath>
+#include <random>
 
 using namespace QuantLib;
 using namespace std;
@@ -20,17 +22,20 @@ void ReplicationError::compute(Size nTimeSteps, Size nSamples)
     Handle<Quote> stateVariable(ext::shared_ptr<Quote>(new SimpleQuote(s0_)));
     Handle<YieldTermStructure> riskFreeRate(ext::shared_ptr<YieldTermStructure>(new FlatForward(today, u_, dayCount)));
     Handle<YieldTermStructure> dividendYield(ext::shared_ptr<YieldTermStructure>(new FlatForward(today, 0.0, dayCount)));
-    Handle<BlackVolTermStructure> volatility(ext::shared_ptr<BlackVolTermStructure>(new BlackConstantVol(today, calendar, simulSigma_, dayCount)));
+    Handle<BlackVolTermStructure> volatility(ext::shared_ptr<BlackVolTermStructure>(new BlackConstantVol(today, calendar, sigma_, dayCount)));
+	//Handle<BlackVolTermStructure> volatility(ext::shared_ptr<BlackVolTermStructure>(new BlackConstantVol(today, calendar, simulSigma_, dayCount)));
     ext::shared_ptr<StochasticProcess1D> diffusion(new BlackScholesMertonProcess(stateVariable, dividendYield, riskFreeRate, volatility));
     
     //
     PseudoRandom::rsg_type rsg = PseudoRandom::make_sequence_generator(nTimeSteps, 1);
     bool brownianBridge = false;
     typedef SingleVariate<PseudoRandom>::path_generator_type generator_type;
+
+	//ext::shared_ptr<generator_type> myPathGenerator(new generator_type(diffusion, maturity_, nTimeSteps, rsg, brownianBridge));
     ext::shared_ptr<generator_type> myPathGenerator(new generator_type(diffusion, maturity_, nTimeSteps, rsg, brownianBridge));
     
     ext::shared_ptr<PathPricer<Path> > myPathPricer(new ReplicationPathPricer(payoff_.optionType(), payoff_.strike(),
-                                                                              r_, q_, maturity_, sigma_, transactionCost_));
+                                                                              r_, q_, maturity_, HedgeVol_, transactionCost_));
     Statistics statisticsAccumulator;
     MonteCarloModel<SingleVariate, PseudoRandom> MCSimulation(myPathGenerator, myPathPricer, statisticsAccumulator, false);
     MCSimulation.addSamples(nSamples);
@@ -92,9 +97,11 @@ Real ReplicationPathPricer::operator()(const Path& path) const
     DiscountFactor qDiscount = std::exp(-q_*maturity_);
     Real forward = stock * qDiscount / rDiscount;
     Real stdDev = std::sqrt(sigma_*sigma_*maturity_);
+	//Real stdDev = std::sqrt(sigma_*sigma_*maturity_); // Input Vol
     ext::shared_ptr<StrikedTypePayoff> payoff(new PlainVanillaPayoff(type_, strike_));
     
-    BlackCalculator black(payoff, forward, stdDev, rDiscount);
+
+	BlackCalculator black(payoff, forward, stdDev, rDiscount);
     money_account += black.value();
     Real delta = black.delta(stock);
     Real stockAmount = delta;
@@ -159,3 +166,25 @@ void ReplicationError::optimalHedging(Size maxDt)
 
 
 
+
+/*
+void ReplicationError::computePnL(Size nSim)
+{
+	double sumPayoff = 0;
+	double df = std::exp(-r_ * maturity_);
+
+	std::mt19937_64 gen;
+	std::normal_distribution<double> engine(0.0, 1.0);
+	gen.seed(1);
+	
+	double ePnl = std::exp(0.5* - q_ - 0.5*HedgeVol_*HedgeVol_)*maturity_);
+	double diffusion = HedgeVol_ * std::sqrt(maturity_);
+
+	for (Size i = 0; i < nSim; ++i)
+	{
+		double e = engine(gen);
+		double sT = eS*std::exp
+	}
+
+}
+*/

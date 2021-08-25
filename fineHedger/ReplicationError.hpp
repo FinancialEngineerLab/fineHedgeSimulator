@@ -30,7 +30,8 @@ public:
         
         //for option BSM Vega
         vega_ = black.vega(maturity_);
-        
+		OptionValue_ = black.value();
+
         std::cout << std::endl;
         std::cout << std::setw(8) << " " << " | "
                   << std::setw(8) << " " << " | "
@@ -51,7 +52,9 @@ public:
 		initialSimul();
     }
     
-    void compute(Size nTimeSteps, Size nSamples);
+    //void compute(Size nTimeSteps, Size nSamples);
+
+	void compute(Size nTimeSteps, Size nSamples, Size inTimeSteps);
 	void optimalHedging(Size maxDt);
 	void printResult();
 
@@ -61,7 +64,7 @@ public:
 	void initialSimul()
 	{
 		u_ = r_;
-		simulSigma_ = sigma_;
+		HedgeVol_ = sigma_;
 	}
 
 	void initialHedge()
@@ -73,17 +76,20 @@ public:
 		theorStD = 0;
         tempPaths.clear();
         optimalTimes = nTimeSteps;
+		//OptionValue_ = 0;
 	}
 
 	Rate u_;
 	Rate simulSigma_;
+	Rate HedgeVol_;
 
 	Size scenarios;
 	Size nTimeSteps;
 	//static Size hedgesNum;
     Volatility inputVol;
     Time time;
-    
+	Real OptionValue_ =0;
+
 	Size nSamples =0;
 	Real PLMean;
 	Real PLStddev;
@@ -130,6 +136,7 @@ private:
     Rate q_;
     Time maturity_;
     Volatility sigma_;
+	Volatility simulSigma_;
     Real transactionCost_;
     
 };

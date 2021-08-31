@@ -10,7 +10,7 @@ This Program is used for discrete dynamic hedging simulation to analyize impact 
 
 2021-08-10 : Optimal Hedging Trading Numbers with Objective Functions as Optimization
 
-2021-08-23~ : Hedging Real vol or Implied vol with Upper and Lower Bound
+2021-08-31 : Hedging Real vol vs Pricing Implied vol with Upper and Lower Bound Level
 
 2021-08-? : Gamma Trading
 
@@ -18,7 +18,7 @@ This Program is used for discrete dynamic hedging simulation to analyize impact 
 main refernece:
 
 Emanuel Derman's
-Ch4. The P&L of hedged option in the BSM world, Volatility Smile (2016)
+Ch4. The P&L of hedged option strategy in the BSM world, Volatility Smile (2016)
 
 Ch5. The Effect of Discrete Hedging on P&L, Volatility Smile (2016)
 

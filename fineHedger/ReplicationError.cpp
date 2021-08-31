@@ -1,4 +1,3 @@
-
 #include "ReplicationError.hpp"
 #include <stdio.h>
 #include <vector>

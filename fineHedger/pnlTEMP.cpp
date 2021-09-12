@@ -1,5 +1,4 @@
-
-
+/*
 
 void ReplicationError::computePnL(Size nSim)
 {
@@ -50,3 +49,5 @@ void ReplicationError::computePnL(Size nSim)
         }
     }
 }
+
+*/

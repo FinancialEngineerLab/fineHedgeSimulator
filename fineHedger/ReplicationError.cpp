@@ -260,8 +260,7 @@ void ReplicationError::computePnL(Size nTimeSteps, Size nSamples)
             
             //double driftTerm2 = 0.5* GammaInputVol[i-1][j] * sTHedgeVol[i][j] *sTHedgeVol[i][j]
             //* (HedgeVol_ * HedgeVol_ - sigma_ * sigma_);
-            double driftTerm2 = 0.5* GammaInputVol[i-1][j] * sTHedgeVol[i][j] *sTHedgeVol[i][j]
-            * (HedgeVol_ * HedgeVol_ - sigma_ * sigma_);
+            double driftTerm2 = 0.5* GammaInputVol[i-1][j] * sTHedgeVol[i][j] *sTHedgeVol[i][j] * (HedgeVol_ * HedgeVol_ - sigma_ * sigma_);
             //double  (constInputDelta - constHedgeDelta) *  (u_ - r_ + q_);
             //double sigmaTerm = (constInputDelta - constHedgeDelta) * HedgeVol_;
             

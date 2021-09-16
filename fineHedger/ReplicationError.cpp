@@ -176,7 +176,7 @@ void ReplicationError::computePnL(Size nTimeSteps, Size nSamples)
 	std::mt19937_64 gen;
 	std::normal_distribution<double> engine(0.0, 1.0);
 	gen.seed(1);
-
+	double rnStock = engine(gen);
 	//std::vector<vector<Real>> sTHedgeVol(nTimeSteps+1, vector<Real>(nSamples, 0.000000));
 	std::vector<vector<Real>> sTdrift(nTimeSteps + 1, vector<Real>(nSamples, 0.000000));
 	std::vector<vector<Real>> sK(nTimeSteps + 1, vector<Real>(nSamples, 0.000000));
@@ -209,7 +209,6 @@ void ReplicationError::computePnL(Size nTimeSteps, Size nSamples)
 
 	for (double i = 1; i <= nTimeSteps; i++)
 	{
-		//double rnStock = engine(gen);
 		//cout << constInputDelta << endl;
 		for (double j = 1; j <= nSamples; j++)
 		{
@@ -242,6 +241,7 @@ void ReplicationError::computePnL(Size nTimeSteps, Size nSamples)
 				" , Upper Bound : " << upperBound << " , Lower Bound : " << lowerBounds[i][j] <<
 				std::endl;
 		}
+		rnStock -= rnStock;
 	}
 }
 

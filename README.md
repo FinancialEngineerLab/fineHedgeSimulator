@@ -4,14 +4,23 @@ You need to read the Result.png
 
 This Program is used for discrete dynamic hedging simulation to analyize impact of hedging numbers as steps, transcation cost, mismatch of volatility and mismatch of drift term.
 
-2021-07-30 : hedging numbers transaction cost
+2021-07-30 : hedging numbers when paying transaction cost in delta hedging
 
 2021-08-02 : mismatch volatility and drift term, respectively
+ > What if there is mismatched of volatility (i.e Real vs Implied) or drift (i.e Risk Free Rate vs Mean)
 
 2021-08-10 : Optimal Hedging Trading Numbers with Objective Functions as Optimization
+ > you can set up the Utility function for optimization in hedging performance,
+ > then this program give the Optimal Hedging Frequency satisfied with the utility function as well as minizing transaction cost
 
 2021-08-31 : Hedging Real vol vs Pricing Implied vol with Upper and Lower Bound Level
-
+ > When Realized Volatility is larger than Implied Volatlity, then long call option and delta hedging,
+ > the Profit and Loss Process (SDE) can be described as
+ > convergence to Upper bound with difference of two options (+) following to decay of time maturity
+ > and Lower bound can be calculated in formula of Vol difference and time decay
+ > and the Profit and Loss Process (SDE) decomposed into two major term
+ > first, Gamma (Gamma + Gamma from theta)
+ > Second, Stock Path in drift term manipulated
 2021-08-? : Gamma Trading
 
 

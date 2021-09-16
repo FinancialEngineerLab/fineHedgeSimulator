@@ -253,7 +253,7 @@ void ReplicationError::computePnL(Size nTimeSteps, Size nSamples)
             Real timeToMaturity = maturity_ - dtCum;
             
             sTHedgeVol[0][j] = s0_;
-            sTHedgeVol[i][j] = (sTHedgeVol[i - 1][j] * std::exp((r_ - u_ -q_ - HedgeVol_ * HedgeVol_ * 0.5)*dt + HedgeVol_ * std::sqrt(dt)*rnStock));
+            sTHedgeVol[i][j] = (sTHedgeVol[i - 1][j] * std::exp((u_  -q_ - HedgeVol_ * HedgeVol_ * 0.5)*dt + HedgeVol_ * std::sqrt(dt)*rnStock));
             //sTHedgeVol[i][j] = sTHedgeVol[i - 1][j]+ sTHedgeVol[i - 1][j]* (u_)*dt + sTHedgeVol[i - 1][j]* HedgeVol_ * std::sqrt(dt)*rnStock*(dt*dt-1);
           
             sTdrift[0][j] = s0_;

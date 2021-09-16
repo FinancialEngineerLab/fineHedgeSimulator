@@ -201,12 +201,10 @@ double gaussian_box_muller() {
 void ReplicationError::computePnL(Size nTimeSteps, Size nSamples)
 {
     //std::random_device rd;
-
     std::vector<vector<Real>> sTHedgeVol(nTimeSteps+1, vector<Real>(nSamples+1, 0.000000));
     std::vector<vector<Real>> sTdrift(nTimeSteps + 1, vector<Real>(nSamples+1, 0.000000));
     std::vector<vector<Real>> sK(nTimeSteps + 1, vector<Real>(nSamples+1, 0.000000));
     std::vector<vector<Real>> tempDrift(nTimeSteps + 1, vector<Real>(nSamples+1, 0.000000));
-
     std::vector<vector<Real>> DeltaHedgeVol(nTimeSteps+1, vector<Real>(nSamples+1, 0.000000));
     std::vector<vector<Real>> DeltaInputVol(nTimeSteps+1, vector<Real>(nSamples+1, 0.000000));
     std::vector<vector<Real>> GammaInputVol(nTimeSteps+1, vector<Real>(nSamples+1, 0.000000));
@@ -225,7 +223,6 @@ void ReplicationError::computePnL(Size nTimeSteps, Size nSamples)
     double constInputGamma = BSMGamma(sigma_, s0_, maturity_);
     //cout << constInputGamma << endl;
     double driftTerm = (0.5 * constInputGamma * s0_ * s0_ * (HedgeVol_ * HedgeVol_ - sigma_ * sigma_));// +(constInputD = 0.0elta - constHedgeDelta)*(u_ - r_ + q_) * s0_);
-
     
     std::vector<vector<double>> lowerBounds(nTimeSteps+1, vector<double>(nSamples+1, 0.000000));
     Decimal dt;
@@ -242,7 +239,6 @@ void ReplicationError::computePnL(Size nTimeSteps, Size nSamples)
         //cout << constInputDelta << endl;
         for (double j = 1; j <= nSamples; j++)
         {
-            
             double rnStock;
             rnStock = gaussian_box_muller();
             //cout << constInputDelta << endl;
@@ -253,26 +249,24 @@ void ReplicationError::computePnL(Size nTimeSteps, Size nSamples)
             Real timeToMaturity = maturity_ - dtCum;
             
             sTHedgeVol[0][j] = s0_;
-            sTHedgeVol[i][j] = (sTHedgeVol[i - 1][j] * std::exp((u_  -q_ - HedgeVol_ * HedgeVol_ * 0.5)*dt + HedgeVol_ * std::sqrt(dt)*rnStock));
+            sTHedgeVol[i][j] = (sTHedgeVol[i - 1][j] * std::exp((u_ -q_ - HedgeVol_ * HedgeVol_ * 0.5)*dt + HedgeVol_ * std::sqrt(dt)*rnStock));
             //sTHedgeVol[i][j] = sTHedgeVol[i - 1][j]+ sTHedgeVol[i - 1][j]* (u_)*dt + sTHedgeVol[i - 1][j]* HedgeVol_ * std::sqrt(dt)*rnStock*(dt*dt-1);
-          
             sTdrift[0][j] = s0_;
             sTdrift[i][j] = (sTdrift[i - 1][j] * std::exp((u_ - r_ + q_ - HedgeVol_ * HedgeVol_ * 0.5)*dt + HedgeVol_ * std::sqrt(dt)*rnStock));
-            
 
             DeltaHedgeVol[i][j] = BSMDelta(HedgeVol_, sTHedgeVol[i][j], timeToMaturity);
             DeltaInputVol[i][j] = BSMDelta(sigma_, sTHedgeVol[i][j], timeToMaturity);
             GammaInputVol[i][j] = BSMGamma(sigma_, sTHedgeVol[i][j], timeToMaturity);
             
+            //double driftTerm2 = 0.5* GammaInputVol[i-1][j] * sTHedgeVol[i][j] *sTHedgeVol[i][j]
+            //* (HedgeVol_ * HedgeVol_ - sigma_ * sigma_);
             double driftTerm2 = 0.5* GammaInputVol[i-1][j] * sTHedgeVol[i][j] *sTHedgeVol[i][j]
             * (HedgeVol_ * HedgeVol_ - sigma_ * sigma_);
             //double  (constInputDelta - constHedgeDelta) *  (u_ - r_ + q_);
             //double sigmaTerm = (constInputDelta - constHedgeDelta) * HedgeVol_;
             
-            
             pnlProcess[i][j] = pnlProcess[i - 1][j] + dt * driftTerm2 + (DeltaInputVol[i-1][j] - DeltaHedgeVol[i-1][j]) * (sTdrift[i][j]- sTdrift[i-1][j]);
             //(sTdrift[i][j] - sTdrift[i - 1][j]);//sTdrift[i-1][j-1] * (exp((u_ - r_ + q_ - HedgeVol_ * HedgeVol_ * 0.5)*dt + HedgeVol_ * sqrt(dt)*rnStock)-1);
-            
             //- sTdrift[i - 1][j]);//sTdrift[i-1][j-1] * (exp((u_ - r_ + q_ - HedgeVol_ * HedgeVol_ * 0.5)*dt + HedgeVol_ * sqrt(dt)*rnStock)-1);
 
             pnlResult[i][j] = pnlProcess[i][j] * std::exp(-r_ *(timeToMaturity));

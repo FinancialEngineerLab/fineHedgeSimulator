@@ -223,10 +223,10 @@ void ReplicationError::computePnL(Size nTimeSteps, Size nSamples)
 			sTdrift[0][j] = s0_;
 			sTdrift[i][j] = (sTdrift[i - 1][j] * std::exp((u_ - r_ + q_ - HedgeVol_ * HedgeVol_ * 0.5)*dt + HedgeVol_ * std::sqrt(dt)*rnStock));
 			
-
-			//tempDrift[0][j] = s0_;
-			//tempDrift[i][j] = tempDrift[i-1][j] + 1.0 / s0_ * ((u_ - r_ + q_)*dt + HedgeVol_ * sqrt(dt)* rnStock);
-
+			// milestein Scheme for Discreteization GBM Process Manipulation
+			//sTdrift[i][j] = sTdrift[i - 1][j] + (u_-r_+q_) * sTdrift[i - 1][j] * dt + HedgeVol_* sTdrift[i - 1][j] * rnStock +
+			//			0.5*HedgeVol_*HedgeVol_*sTdrift[i - 1][j]*(dt*rnStock*rnStock - dt)
+			
 			sK[0][j] = s0_;
 			sK[i][j] = strike_ * exp((r_ - 0.5 * HedgeVol_ * sigma_) * dtCum);
 																											   //double diffusionTerm = (constInputDelta - constHedgeDelta)* s0_;

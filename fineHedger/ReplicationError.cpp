@@ -241,7 +241,7 @@ void ReplicationError::computePnL(Size nTimeSteps, Size nSamples)
 				" , Upper Bound : " << upperBound << " , Lower Bound : " << lowerBounds[i][j] <<
 				std::endl;
 		}
-		rnStock -= rnStock;
+		//rnStock -= rnStock;
 	}
 }
 

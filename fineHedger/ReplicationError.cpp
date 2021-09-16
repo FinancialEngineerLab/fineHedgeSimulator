@@ -231,16 +231,15 @@ void ReplicationError::computePnL(Size nTimeSteps, Size nSamples)
     std::mt19937_64 gen;
     std::normal_distribution<double> engine(0.0, 1.0);
     gen.seed(1);
-    double rnStock1;
-    rnStock1 = engine(gen);
-    
     for (double i = 1; i <= nTimeSteps; i++)
     {
         //cout << constInputDelta << endl;
         for (double j = 1; j <= nSamples; j++)
         {
+            
             double rnStock;
-            rnStock = gaussian_box_muller();
+            rnStock = engine(gen);
+            
             //cout << constInputDelta << endl;
             Real dtCum;
             Real Temp;
@@ -249,7 +248,7 @@ void ReplicationError::computePnL(Size nTimeSteps, Size nSamples)
             Real timeToMaturity = maturity_ - dtCum;
             
             sTHedgeVol[0][j] = s0_;
-            sTHedgeVol[i][j] = (sTHedgeVol[i - 1][j] * std::exp((u_ -q_ - HedgeVol_ * HedgeVol_ * 0.5)*dt + HedgeVol_ * std::sqrt(dt)*rnStock));
+            sTHedgeVol[i][j] = (sTHedgeVol[i - 1][j] * std::exp((u_ -q_- HedgeVol_ * HedgeVol_ * 0.5)*dt + HedgeVol_ * std::sqrt(dt)*rnStock));
             //sTHedgeVol[i][j] = sTHedgeVol[i - 1][j]+ sTHedgeVol[i - 1][j]* (u_)*dt + sTHedgeVol[i - 1][j]* HedgeVol_ * std::sqrt(dt)*rnStock*(dt*dt-1);
             sTdrift[0][j] = s0_;
             sTdrift[i][j] = (sTdrift[i - 1][j] * std::exp((u_ - r_ + q_ - HedgeVol_ * HedgeVol_ * 0.5)*dt + HedgeVol_ * std::sqrt(dt)*rnStock));
@@ -260,11 +259,11 @@ void ReplicationError::computePnL(Size nTimeSteps, Size nSamples)
             
             //double driftTerm2 = 0.5* GammaInputVol[i-1][j] * sTHedgeVol[i][j] *sTHedgeVol[i][j]
             //* (HedgeVol_ * HedgeVol_ - sigma_ * sigma_);
-            double driftTerm2 = 0.5* GammaInputVol[i-1][j] * sTHedgeVol[i][j] *sTHedgeVol[i][j] * (HedgeVol_ * HedgeVol_ - sigma_ * sigma_);
-            //double  (constInputDelta - constHedgeDelta) *  (u_ - r_ + q_);
-            //double sigmaTerm = (constInputDelta - constHedgeDelta) * HedgeVol_;
+            double driftTerm2 = 0.5* GammaInputVol[i-1][j] * sTdrift[i-1][j] *sTdrift[i-1][j] * (HedgeVol_ * HedgeVol_ - sigma_ * sigma_);
             
             pnlProcess[i][j] = pnlProcess[i - 1][j] + dt * driftTerm2 + (DeltaInputVol[i-1][j] - DeltaHedgeVol[i-1][j]) * (sTdrift[i][j]- sTdrift[i-1][j]);
+            
+            
             //(sTdrift[i][j] - sTdrift[i - 1][j]);//sTdrift[i-1][j-1] * (exp((u_ - r_ + q_ - HedgeVol_ * HedgeVol_ * 0.5)*dt + HedgeVol_ * sqrt(dt)*rnStock)-1);
             //- sTdrift[i - 1][j]);//sTdrift[i-1][j-1] * (exp((u_ - r_ + q_ - HedgeVol_ * HedgeVol_ * 0.5)*dt + HedgeVol_ * sqrt(dt)*rnStock)-1);
 
@@ -276,6 +275,5 @@ void ReplicationError::computePnL(Size nTimeSteps, Size nSamples)
                 " , Upper Bound : " << upperBound << " , Lower Bound : " << lowerBounds[i][j] <<
                 std::endl;
         }
-        
     }
 }

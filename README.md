@@ -21,6 +21,7 @@ This Program is used for discrete dynamic hedging simulation to analyize impact 
  > and the Profit and Loss Process (SDE) decomposed into two major term
  > first, Gamma (Gamma + Gamma from theta)
  > Second, Stock Path in drift term manipulated
+
 2021-08-? : Gamma Trading
 
 
